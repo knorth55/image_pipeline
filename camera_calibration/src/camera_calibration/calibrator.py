@@ -48,6 +48,7 @@ import sensor_msgs.msg
 import tarfile
 import time
 from distutils.version import LooseVersion
+import yaml
 
 
 # Supported calibration patterns
@@ -800,6 +801,8 @@ class MonoCalibrator(Calibrator):
         ims = [("left-%04d.png" % i, im) for i,(_, im) in enumerate(self.db)]
         for (name, im) in ims:
             taradd(name, cv2.imencode(".png", im)[1].tostring())
+        extrinsic_params = {'rotation_matrix': self.R, 'translation_matrix': self.T}
+        taradd('extrinsic.yaml', yaml.safe_dump(extrinsic_params, default_flow_style=False))
         taradd('ost.yaml', self.yaml())
         taradd('ost.txt', self.ost())
 
